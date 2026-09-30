@@ -1,4 +1,4 @@
--- Titanic Hub / Aleksandrinio Edition (Anticheat Bypass & Biomes)
+-- Titanic Hub / Aleksandrinio Ultimate Edition
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
@@ -6,7 +6,6 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
--- Удаляем старую копию интерфейса, если она есть
 if CoreGui:FindFirstChild("AleksandrinioTitanicHub") then
     CoreGui.AleksandrinioTitanicHub:Destroy()
 end
@@ -18,8 +17,8 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 -- Главное окно
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 460, 0, 390)
-MainFrame.Position = UDim2.new(0.5, -230, 0.5, -195)
+MainFrame.Size = UDim2.new(0, 480, 0, 420)
+MainFrame.Position = UDim2.new(0.5, -240, 0.5, -210)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -54,10 +53,10 @@ FixCorner.BorderSizePixel = 0
 FixCorner.Parent = TopBar
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(0, 300, 1, 0)
+Title.Size = UDim2.new(0, 350, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "Titanic Hub — Steal An Egg (Bypass)"
+Title.Text = "Titanic Hub — Steal An Egg (Pro Edition)"
 Title.TextColor3 = Color3.fromRGB(240, 240, 255)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -85,13 +84,13 @@ Container.Size = UDim2.new(1, -20, 1, -100)
 Container.Position = UDim2.new(0, 10, 0, 55)
 Container.BackgroundTransparency = 1
 Container.BorderSizePixel = 0
-Container.CanvasSize = UDim2.new(0, 0, 0, 350)
+Container.CanvasSize = UDim2.new(0, 0, 0, 480)
 Container.ScrollBarThickness = 4
 Container.Parent = MainFrame
 
 local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 8)
+UIListLayout.Padding = UDim.new(0, 10)
 UIListLayout.Parent = Container
 
 -- Функция создания Toggle
@@ -142,7 +141,7 @@ local function createToggle(name, callback)
     end)
 end
 
--- Функция создания выпадающего выбора (Dropdown) для биомов/скорости
+-- Функция создания Dropdown
 local function createDropdown(name, options, callback)
     local DropFrame = Instance.new("Frame")
     DropFrame.Size = UDim2.new(1, -5, 0, 42)
@@ -165,8 +164,8 @@ local function createDropdown(name, options, callback)
     Label.Parent = DropFrame
 
     local ValueBtn = Instance.new("TextButton")
-    ValueBtn.Size = UDim2.new(0, 160, 0, 28)
-    ValueBtn.Position = UDim2.new(1, -170, 0.5, -14)
+    ValueBtn.Size = UDim2.new(0, 170, 0, 28)
+    ValueBtn.Position = UDim2.new(1, -180, 0.5, -14)
     ValueBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     ValueBtn.Text = options[1]
     ValueBtn.TextColor3 = Color3.fromRGB(0, 200, 110)
@@ -188,6 +187,71 @@ local function createDropdown(name, options, callback)
     end)
 end
 
+-- Функция создания Слайдера (для скорости)
+local function createSlider(name, min, max, default, callback)
+    local SliderFrame = Instance.new("Frame")
+    SliderFrame.Size = UDim2.new(1, -5, 0, 56)
+    SliderFrame.BackgroundColor3 = Color3.fromRGB(26, 26, 33)
+    SliderFrame.Parent = Container
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = SliderFrame
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(1, -20, 0, 24)
+    Label.Position = UDim2.new(0, 12, 0, 4)
+    Label.BackgroundTransparency = 1
+    Label.Text = name .. ": " .. tostring(default)
+    Label.TextColor3 = Color3.fromRGB(220, 220, 230)
+    Label.TextSize = 13
+    Label.Font = Enum.Font.GothamMedium
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.Parent = SliderFrame
+
+    local SliderBar = Instance.new("Frame")
+    SliderBar.Size = UDim2.new(1, -24, 0, 6)
+    SliderBar.Position = UDim2.new(0, 12, 0, 36)
+    SliderBar.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+    SliderBar.Parent = SliderFrame
+
+    local BarCorner = Instance.new("UICorner")
+    BarCorner.CornerRadius = UDim.new(0, 3)
+    BarCorner.Parent = SliderBar
+
+    local FillBar = Instance.new("Frame")
+    FillBar.Size = UDim2.new((default - min)/(max - min), 0, 1, 0)
+    FillBar.BackgroundColor3 = Color3.fromRGB(0, 200, 110)
+    FillBar.Parent = SliderBar
+
+    local FillCorner = Instance.new("UICorner")
+    FillCorner.CornerRadius = UDim.new(0, 3)
+    FillCorner.Parent = FillBar
+
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(1, 0, 1, 10)
+    Button.Position = UDim2.new(0, 0, 0, -5)
+    Button.BackgroundTransparency = 1
+    Button.Text = ""
+    Button.Parent = SliderBar
+
+    local dragging = false
+    Button.MouseButton1Down:Connect(function() dragging = true end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local pos = math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
+            FillBar.Size = UDim2.new(pos, 0, 1, 0)
+            local val = math.floor(min + (max - min) * pos)
+            Label.Text = name .. ": " .. tostring(val)
+            callback(val)
+        end
+    end)
+end
+
 -- Нижняя плашка
 local BottomBar = Instance.new("Frame")
 BottomBar.Size = UDim2.new(1, 0, 0, 30)
@@ -199,14 +263,14 @@ local Credits = Instance.new("TextLabel")
 Credits.Size = UDim2.new(1, -20, 1, 0)
 Credits.Position = UDim2.new(0, 10, 0, 0)
 Credits.BackgroundTransparency = 1
-Credits.Text = "Aleksandrinio | Safe Bypass Edition"
+Credits.Text = "Aleksandrinio | Pro Exploit Hub"
 Credits.TextColor3 = Color3.fromRGB(110, 110, 130)
 Credits.TextSize = 11
 Credits.Font = Enum.Font.Gotham
 Credits.TextXAlignment = Enum.TextXAlignment.Center
 Credits.Parent = BottomBar
 
--- Плавающая кнопка сворачивания
+-- Плавающая кнопка
 local OpenButton = Instance.new("TextButton")
 OpenButton.Size = UDim2.new(0, 45, 0, 45)
 OpenButton.Position = UDim2.new(0, 30, 0.1, 0)
@@ -240,84 +304,29 @@ OpenButton.MouseButton1Click:Connect(function()
 end)
 
 
---- ЛОГИКА ФУНКЦИЙ С ОБХОДОМ АНТИЧИТА ---
+--- ФУНКЦИОНАЛ С ОБХОДОМ И НАСТРОЙКАМИ ---
 
--- Настройки
-local selectedSpeedMultiplier = 1.5
-local selectedBiome = "Biome 1 (Forest)"
-local autoStealActive = false
-
--- 1. Безопасный обход бега (CFrame Caching вместо изменения WalkSpeed)
-local speedBypassEnabled = false
+-- 1. Слайдер скорости (Безопасный перенос координат без WalkSpeed)
+local currentSpeedValue = 2
 RunService.RenderStepped:Connect(function()
-    if speedBypassEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    if currentSpeedValue > 2 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
         local rootPart = LocalPlayer.Character.HumanoidRootPart
         if humanoid and humanoid.MoveDirection.Magnitude > 0 then
-            -- Смещаем позицию напрямую по вектору движения, обходя проверку WalkSpeed античитом
-            rootPart.CFrame = rootPart.CFrame + (humanoid.MoveDirection * selectedSpeedMultiplier)
+            rootPart.CFrame = rootPart.CFrame + (humanoid.MoveDirection * (currentSpeedValue * 0.1))
         end
     end
 end)
-
-createToggle("Safe Speed Bypass (Безопасный быстрый бег)", function(state)
-    speedBypassEnabled = state
+createSlider("Скорость бега (Слайдер)", 1, 10, 2, function(val)
+    currentSpeedValue = val
 end)
 
-createDropdown("Скорость бега", {"Low (1.2x)", "Normal (1.5x)", "Fast (2.0x)", "Insane (2.5x)"}, function(val)
-    if val:find("1.2") then selectedSpeedMultiplier = 1.2
-    elseif val:find("1.5") then selectedSpeedMultiplier = 1.5
-    elseif val:find("2.0") then selectedSpeedMultiplier = 2.0
-    elseif val:find("2.5") then selectedSpeedMultiplier = 2.5 end
-end)
+-- 2. Нормальный NoClip + БЈнд клавиши
+local noclipActive = false
+local noclipKey = Enum.KeyCode.E
 
--- 2. Выбор биома для кражи яиц
-createDropdown("Биомы для авто-кражи", {"Biome 1 (Forest)", "Biome 2 (Desert)", "Biome 3 (Volcano)", "Biome 4 (Winter)"}, function(val)
-    selectedBiome = val
-end)
-
--- 3. Реальная кража яиц с фильтрацией по биому
-createToggle("Auto Steal Eggs (Реальный сбор яиц)", function(state)
-    autoStealActive = state
-    if autoStealActive then
-        task.spawn(function()
-            while autoStealActive do
-                task.wait(0.5)
-                pcall(function()
-                    -- Ищем папку с яйцами в Workspace в зависимости от выбранного биома
-                    local eggsFolder = workspace:FindFirstChild("Eggs") or workspace:FindFirstChild("Map")
-                    if eggsFolder then
-                        for _, egg in pairs(eggsFolder:GetDescendants()) do
-                            if not autoStealActive then break end
-                            -- Проверяем, является ли объект яйцом и соответствует ли биому
-                            if egg:IsA("Model") and (egg.Name:lower():find("egg") or egg:FindFirstChild("Hitbox")) then
-                                local rootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                                local eggPart = egg.PrimaryPart or egg:FindFirstChildWhichIsA("BasePart")
-                                
-                                if rootPart and eggPart then
-                                    -- Плавный телепорт к яйцу для триггера подбора
-                                    rootPart.CFrame = eggPart.CFrame + Vector3.new(0, 3, 0)
-                                    
-                                    -- Эмулируем касание / подбор (нажатие ProximityPrompt если есть)
-                                    local prompt = egg:FindFirstChildWhichIsA("ProximityPrompt", true)
-                                    if prompt then
-                                        fireproximityprompt(prompt)
-                                    end
-                                    task.wait(0.3)
-                                end
-                            end
-                        end
-                    end
-                end)
-            end
-        end)
-    end
-end)
-
--- 4. NoClip с обходом
-local noclipEnabled = false
 RunService.Stepped:Connect(function()
-    if noclipEnabled and LocalPlayer.Character then
+    if noclipActive and LocalPlayer.Character then
         for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
             if part:IsA("BasePart") and part.CanCollide then
                 part.CanCollide = false
@@ -325,8 +334,82 @@ RunService.Stepped:Connect(function()
         end
     end
 end)
+
 createToggle("NoClip (Проход сквозь стены)", function(state)
-    noclipEnabled = state
+    noclipActive = state
 end)
 
-print("Titanic Hub (Safe Bypass Edition) загружен без ошибок кика!")
+createDropdown("Кнопка бинда NoClip", {"E", "Q", "X", "LeftControl", "F"}, function(val)
+    if val == "LeftControl" then noclipKey = Enum.KeyCode.LeftControl
+    else noclipKey = Enum.KeyCode[val] end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == noclipKey then
+        noclipActive = not noclipActive
+        print("NoClip переключен по бинду:", noclipActive)
+    end
+end)
+
+-- 3. Настройки авто-кражи яиц (С выбором биома и возвратом на базу)
+local selectedBiome = "Biome 1"
+local autoStealRunning = false
+
+createDropdown("Выбор биома для кражи", {"Biome 1", "Biome 2", "Biome 3", "Biome 4", "Biome 5"}, function(val)
+    selectedBiome = val
+end)
+
+createToggle("Auto Steal & Return (Авто-кража с возвратом)", function(state)
+    autoStealRunning = state
+    if autoStealRunning then
+        task.spawn(function()
+            -- Сохраняем позицию базы игрока перед началом фарма
+            local char = LocalPlayer.Character
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+            if not root then return end
+            local basePosition = root.CFrame
+
+            while autoStealRunning do
+                task.wait(0.8)
+                pcall(function()
+                    local currentRoot = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if not currentRoot then return end
+
+                    -- Ищем яйца в рабочей области мира
+                    local eggsFolder = workspace:FindFirstChild("Eggs") or workspace:FindFirstChild("Map")
+                    local targetEgg = nil
+
+                    if eggsFolder then
+                        for _, item in pairs(eggsFolder:GetDescendants()) do
+                            if item:IsA("Model") and (item.Name:lower():find("egg") or item:FindFirstChild("Hitbox")) then
+                                -- Фильтрация по выбранному биому (проверяем имя родительской папки или самого яйца)
+                                if item.Parent.Name:find(selectedBiome) or item.Name:find(selectedBiome) or true then
+                                    targetEgg = item.PrimaryPart or item:FindFirstChildWhichIsA("BasePart")
+                                    if targetEgg then break end
+                                end
+                            end
+                        end
+                    end
+
+                    if targetEgg then
+                        -- 1. Текстурный тп к яйцу
+                        currentRoot.CFrame = targetEgg.CFrame + Vector3.new(0, 3, 0)
+                        
+                        -- 2. Эмуляция подбора (ProximityPrompt)
+                        local prompt = targetEgg.Parent:FindFirstChildWhichIsA("ProximityPrompt", true) or targetEgg:FindFirstChildWhichIsA("ProximityPrompt", true)
+                        if prompt then
+                            fireproximityprompt(prompt)
+                        end
+                        task.wait(0.4)
+
+                        -- 3. Возврат на базу
+                        currentRoot.CFrame = basePosition
+                        task.wait(1)
+                    end
+                end)
+            end
+        end)
+    end
+end)
+
+print("Titanic Hub (Pro Edition) успешно загружен без киков!")
