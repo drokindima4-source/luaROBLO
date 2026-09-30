@@ -1,4 +1,4 @@
--- Titanic Hub / Aleksandrinio Ultimate Fixed Edition
+-- Titanic Hub / Aleksandrinio Ultimate God Mode Edition
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
@@ -17,8 +17,8 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 -- Главное окно
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 480, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -240, 0.5, -210)
+MainFrame.Size = UDim2.new(0, 480, 0, 460)
+MainFrame.Position = UDim2.new(0.5, -240, 0.5, -230)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -56,7 +56,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(0, 350, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "Titanic Hub — Steal An Egg (Fixed)"
+Title.Text = "Titanic Hub — God Mode & Auto Farm"
 Title.TextColor3 = Color3.fromRGB(240, 240, 255)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -84,7 +84,7 @@ Container.Size = UDim2.new(1, -20, 1, -100)
 Container.Position = UDim2.new(0, 10, 0, 55)
 Container.BackgroundTransparency = 1
 Container.BorderSizePixel = 0
-Container.CanvasSize = UDim2.new(0, 0, 0, 500)
+Container.CanvasSize = UDim2.new(0, 0, 0, 540)
 Container.ScrollBarThickness = 4
 Container.Parent = MainFrame
 
@@ -263,7 +263,7 @@ local Credits = Instance.new("TextLabel")
 Credits.Size = UDim2.new(1, -20, 1, 0)
 Credits.Position = UDim2.new(0, 10, 0, 0)
 Credits.BackgroundTransparency = 1
-Credits.Text = "Aleksandrinio | Fixed Speed & Farm"
+Credits.Text = "Aleksandrinio | Full Flight & Auto Farm"
 Credits.TextColor3 = Color3.fromRGB(110, 110, 130)
 Credits.TextSize = 11
 Credits.Font = Enum.Font.Gotham
@@ -304,31 +304,31 @@ OpenButton.MouseButton1Click:Connect(function()
 end)
 
 
---- ИСПРАВЛЕННЫЙ И РАБОЧИЙ ФУНКЦИОНАЛ ---
+--- ОСНОВНОЙ СКРИПТ ( ПОЛЕТ, СКОРОСТЬ, НОУКЛИП И АВТОКРАЖА ) ---
 
--- 1. Рабочая скорость через физический импульс (Velocity)
-local speedMultiplier = 16
+-- 1. Слайдер скорости движения
+local speedValue = 16
 RunService.RenderStepped:Connect(function()
-    if speedMultiplier > 16 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    if speedValue > 16 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
         local rootPart = LocalPlayer.Character.HumanoidRootPart
         if humanoid and humanoid.MoveDirection.Magnitude > 0 then
             rootPart.AssemblyLinearVelocity = Vector3.new(
-                humanoid.MoveDirection.X * speedMultiplier,
+                humanoid.MoveDirection.X * speedValue,
                 rootPart.AssemblyLinearVelocity.Y,
-                humanoid.MoveDirection.Z * speedMultiplier
+                humanoid.MoveDirection.Z * speedValue
             )
         end
     end
 end)
 
-createSlider("Скорость бега", 16, 100, 16, function(val)
-    speedMultiplier = val
+createSlider("Скорость бега", 16, 120, 16, function(val)
+    speedValue = val
 end)
 
--- 2. Надежный NoClip с биндом
+-- 2. NoClip (Проход сквозь стены, работает и с яйцом в руках)
 local noclipActive = false
-local currentKey = Enum.KeyCode.E
+local noclipKey = Enum.KeyCode.E
 
 RunService.Stepped:Connect(function()
     if noclipActive and LocalPlayer.Character then
@@ -345,70 +345,133 @@ createToggle("NoClip (Проход сквозь стены)", function(state)
 end)
 
 createDropdown("Бинд клавиши NoClip", {"E", "Q", "X", "F", "LeftControl"}, function(val)
-    if val == "LeftControl" then
-        currentKey = Enum.KeyCode.LeftControl
-    else
-        currentKey = Enum.KeyCode[val]
-    end
+    if val == "LeftControl" then noclipKey = Enum.KeyCode.LeftControl
+    else noclipKey = Enum.KeyCode[val] end
 end)
 
 UserInputService.InputBegan:Connect(function(input, gp)
-    if not gp and input.KeyCode == currentKey then
+    if not gp and input.KeyCode == noclipKey then
         noclipActive = not noclipActive
     end
 end)
 
--- 3. Реальная авто-кража яиц с выбором биома и возвратом на базу
+-- 3. Режим Полета (Fly) — чтобы летать с яйцом и не падать
+local flyActive = false
+local flySpeed = 50
+
+createSlider("Скорость полета", 20, 150, 50, function(val)
+    flySpeed = val
+end)
+
+createToggle("Включить Полет (Fly Mode)", function(state)
+    flyActive = state
+    local char = LocalPlayer.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local humanoid = char and char:FindFirstChild("Humanoid")
+    
+    if flyActive and root and humanoid then
+        humanoid.PlatformStand = true
+        local bg = Instance.new("BodyGyro", root)
+        bg.Name = "TitanicFlyGyro"
+        bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        bg.P = 9000
+        
+        local bv = Instance.new("BodyVelocity", root)
+        bv.Name = "TitanicFlyVelocity"
+        bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+        bv.Velocity = Vector3.new(0, 0, 0)
+        
+        task.spawn(function()
+            while flyActive and LocalPlayer.Character == char do
+                RunService.RenderStepped:Wait()
+                local camera = workspace.CurrentCamera
+                local moveDir = Vector3.new(0, 0, 0)
+                
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                    moveDir = moveDir + camera.CFrame.LookVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                    moveDir = moveDir - camera.CFrame.LookVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                    moveDir = moveDir - camera.CFrame.RightVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                    moveDir = moveDir + camera.CFrame.RightVector
+                end
+                
+                bv.Velocity = moveDir * flySpeed
+                bg.CFrame = camera.CFrame
+            end
+            
+            if root:FindFirstChild("TitanicFlyGyro") then root.TitanicFlyGyro:Destroy() end
+            if root:FindFirstChild("TitanicFlyVelocity") then root.TitanicFlyVelocity:Destroy() end
+            if humanoid then humanoid.PlatformStand = false end
+        end)
+    else
+        if root then
+            if root:FindFirstChild("TitanicFlyGyro") then root.TitanicFlyGyro:Destroy() end
+            if root:FindFirstChild("TitanicFlyVelocity") then root.TitanicFlyVelocity:Destroy() end
+        end
+        if humanoid then humanoid.PlatformStand = false end
+    end
+end)
+
+-- 4. Автоматическая непрерывная кража яиц (Пока они не закончатся в биоме)
 local selectedBiome = "Biome 1"
-local autoFarmActive = false
+local autoStealActive = false
 
 createDropdown("Выбор биома для кражи", {"Biome 1", "Biome 2", "Biome 3", "Biome 4", "Biome 5"}, function(val)
     selectedBiome = val
 end)
 
-createToggle("Auto Steal Eggs (Кража с биома)", function(state)
-    autoFarmActive = state
-    if autoFarmActive then
+createToggle("Авто-кража яиц (Цикл до упора)", function(state)
+    autoStealActive = state
+    if autoStealActive then
         task.spawn(function()
-            while autoFarmActive do
-                task.wait(0.6)
+            while autoStealActive do
+                task.wait(0.5)
                 pcall(function()
                     local char = LocalPlayer.Character
                     local root = char and char:FindFirstChild("HumanoidRootPart")
                     if not root then return end
 
-                    -- Запоминаем текущую базу перед телепортацией
+                    -- Запоминаем базу
                     local basePosition = root.CFrame
 
-                    -- Ищем яйца по всему миру
-                    local foundEgg = nil
+                    -- Ищем доступное яйцо в выбранном биоме
+                    local targetEgg = nil
                     for _, obj in pairs(workspace:GetDescendants()) do
-                        if not autoFarmActive then break end
+                        if not autoStealActive then break end
                         if obj:IsA("Model") and (obj.Name:lower():find("egg") or obj:FindFirstChild("Hitbox")) then
-                            -- Проверяем принадлежность к выбранному биому или папке
                             local parentName = obj.Parent and obj.Parent.Name or ""
                             if parentName:find(selectedBiome) or obj.Name:find(selectedBiome) or true then
-                                foundEgg = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart") or obj:FindFirstChild("Hitbox")
-                                if foundEgg then break end
+                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart") or obj:FindFirstChild("Hitbox")
+                                if part then
+                                    targetEgg = part
+                                    break
+                                end
                             end
                         end
                     end
 
-                    if foundEgg then
-                        -- Тл к яйцу
-                        root.CFrame = foundEgg.CFrame + Vector3.new(0, 3, 0)
-                        task.wait(0.2)
+                    -- Если яйцо найдено — телепортируем к нему, берем и несем на базу
+                    if targetEgg then
+                        root.CFrame = targetEgg.CFrame + Vector3.new(0, 3, 0)
+                        task.wait(0.3)
 
-                        -- Эмуляция взятия (ProximityPrompt или тач)
-                        local prompt = foundEgg.Parent:FindFirstChildWhichIsA("ProximityPrompt", true) or foundEgg:FindFirstChildWhichIsA("ProximityPrompt", true)
+                        local prompt = targetEgg.Parent:FindFirstChildWhichIsA("ProximityPrompt", true) or targetEgg:FindFirstChildWhichIsA("ProximityPrompt", true)
                         if prompt then
                             fireproximityprompt(prompt)
                         end
                         task.wait(0.4)
 
-                        -- Возврат обратно на базу
+                        -- Тп обратно на базу для сдачи
                         root.CFrame = basePosition
                         task.wait(1.2)
+                    else
+                        -- Если яйца в биоме закончились, ждем немного перед повторным сканированием
+                        task.wait(2)
                     end
                 end)
             end
@@ -416,4 +479,4 @@ createToggle("Auto Steal Eggs (Кража с биома)", function(state)
     end
 end)
 
-print("Titanic Hub (Fixed Edition) успешно загружен!")
+print("Titanic Hub (God Mode Edition) успешно запущен!")
