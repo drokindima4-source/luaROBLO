@@ -1,4 +1,4 @@
--- Titanic Hub / Aleksandrinio Ultimate God Mode Edition
+-- Titanic Hub / Aleksandrinio Ultimate God Mode & Global Farm
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
@@ -56,7 +56,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(0, 350, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "Titanic Hub — God Mode & Auto Farm"
+Title.Text = "Titanic Hub — Global Farme & God Mode"
 Title.TextColor3 = Color3.fromRGB(240, 240, 255)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -141,52 +141,6 @@ local function createToggle(name, callback)
     end)
 end
 
--- Функция создания Dropdown
-local function createDropdown(name, options, callback)
-    local DropFrame = Instance.new("Frame")
-    DropFrame.Size = UDim2.new(1, -5, 0, 42)
-    DropFrame.BackgroundColor3 = Color3.fromRGB(26, 26, 33)
-    DropFrame.Parent = Container
-
-    local DropCorner = Instance.new("UICorner")
-    DropCorner.CornerRadius = UDim.new(0, 8)
-    DropCorner.Parent = DropFrame
-
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(0, 170, 1, 0)
-    Label.Position = UDim2.new(0, 12, 0, 0)
-    Label.BackgroundTransparency = 1
-    Label.Text = name
-    Label.TextColor3 = Color3.fromRGB(220, 220, 230)
-    Label.TextSize = 13
-    Label.Font = Enum.Font.GothamMedium
-    Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Parent = DropFrame
-
-    local ValueBtn = Instance.new("TextButton")
-    ValueBtn.Size = UDim2.new(0, 180, 0, 28)
-    ValueBtn.Position = UDim2.new(1, -190, 0.5, -14)
-    ValueBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-    ValueBtn.Text = options[1]
-    ValueBtn.TextColor3 = Color3.fromRGB(0, 200, 110)
-    ValueBtn.TextSize = 12
-    ValueBtn.Font = Enum.Font.GothamBold
-    ValueBtn.Parent = DropFrame
-
-    local ValCorner = Instance.new("UICorner")
-    ValCorner.CornerRadius = UDim.new(0, 6)
-    ValCorner.Parent = ValueBtn
-
-    local currentIndex = 1
-    ValueBtn.MouseButton1Click:Connect(function()
-        currentIndex = currentIndex + 1
-        if currentIndex > #options then currentIndex = 1 end
-        local selected = options[currentIndex]
-        ValueBtn.Text = selected
-        callback(selected)
-    end)
-end
-
 -- Функция создания Слайдера
 local function createSlider(name, min, max, default, callback)
     local SliderFrame = Instance.new("Frame")
@@ -263,7 +217,7 @@ local Credits = Instance.new("TextLabel")
 Credits.Size = UDim2.new(1, -20, 1, 0)
 Credits.Position = UDim2.new(0, 10, 0, 0)
 Credits.BackgroundTransparency = 1
-Credits.Text = "Aleksandrinio | Full Flight & Auto Farm"
+Credits.Text = "Aleksandrinio | Ultimate Global Farm"
 Credits.TextColor3 = Color3.fromRGB(110, 110, 130)
 Credits.TextSize = 11
 Credits.Font = Enum.Font.Gotham
@@ -304,9 +258,9 @@ OpenButton.MouseButton1Click:Connect(function()
 end)
 
 
---- ОСНОВНОЙ СКРИПТ ( ПОЛЕТ, СКОРОСТЬ, НОУКЛИП И АВТОКРАЖА ) ---
+--- УЛЬТИМАТИВНЫЙ ФУНКЦИОНАЛ (FLY + NOCLIP + GLOBAL FARM) ---
 
--- 1. Слайдер скорости движения
+-- 1. Слайдер скорости движения (безопасный физический вектор)
 local speedValue = 16
 RunService.RenderStepped:Connect(function()
     if speedValue > 16 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -321,15 +275,12 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
-
 createSlider("Скорость бега", 16, 120, 16, function(val)
     speedValue = val
 end)
 
--- 2. NoClip (Проход сквозь стены, работает и с яйцом в руках)
+-- 2. Надежный NoClip (отключает коллизии со всеми частями и аксессуарами навсегда)
 local noclipActive = false
-local noclipKey = Enum.KeyCode.E
-
 RunService.Stepped:Connect(function()
     if noclipActive and LocalPlayer.Character then
         for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
@@ -339,23 +290,11 @@ RunService.Stepped:Connect(function()
         end
     end
 end)
-
-createToggle("NoClip (Проход сквозь стены)", function(state)
+createToggle("NoClip (Проход сквозь любые стены)", function(state)
     noclipActive = state
 end)
 
-createDropdown("Бинд клавиши NoClip", {"E", "Q", "X", "F", "LeftControl"}, function(val)
-    if val == "LeftControl" then noclipKey = Enum.KeyCode.LeftControl
-    else noclipKey = Enum.KeyCode[val] end
-end)
-
-UserInputService.InputBegan:Connect(function(input, gp)
-    if not gp and input.KeyCode == noclipKey then
-        noclipActive = not noclipActive
-    end
-end)
-
--- 3. Режим Полета (Fly) — чтобы летать с яйцом и не падать
+-- 3. Мощный полет (Fly Mode) — позволяет летать с яйцом в руках и скрываться от всех
 local flyActive = false
 local flySpeed = 50
 
@@ -387,18 +326,10 @@ createToggle("Включить Полет (Fly Mode)", function(state)
                 local camera = workspace.CurrentCamera
                 local moveDir = Vector3.new(0, 0, 0)
                 
-                if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                    moveDir = moveDir + camera.CFrame.LookVector
-                end
-                if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                    moveDir = moveDir - camera.CFrame.LookVector
-                end
-                if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                    moveDir = moveDir - camera.CFrame.RightVector
-                end
-                if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                    moveDir = moveDir + camera.CFrame.RightVector
-                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
                 
                 bv.Velocity = moveDir * flySpeed
                 bg.CFrame = camera.CFrame
@@ -417,61 +348,67 @@ createToggle("Включить Полет (Fly Mode)", function(state)
     end
 end)
 
--- 4. Автоматическая непрерывная кража яиц (Пока они не закончатся в биоме)
-local selectedBiome = "Biome 1"
-local autoStealActive = false
+-- 4. Глобальный Авто-фарм яиц (Собирает по всей карте, со всех биомов, возвращает на базу)
+local globalFarmActive = false
 
-createDropdown("Выбор биома для кражи", {"Biome 1", "Biome 2", "Biome 3", "Biome 4", "Biome 5"}, function(val)
-    selectedBiome = val
-end)
-
-createToggle("Авто-кража яиц (Цикл до упора)", function(state)
-    autoStealActive = state
-    if autoStealActive then
+createToggle("Глобальная авто-кража яиц (Все биомы / Дальние)", function(state)
+    globalFarmActive = state
+    if globalFarmActive then
         task.spawn(function()
-            while autoStealActive do
-                task.wait(0.5)
+            while globalFarmActive do
+                task.wait(0.4)
                 pcall(function()
                     local char = LocalPlayer.Character
                     local root = char and char:FindFirstChild("HumanoidRootPart")
                     if not root then return end
 
-                    -- Запоминаем базу
+                    -- Сохраняем позицию базы
                     local basePosition = root.CFrame
 
-                    -- Ищем доступное яйцо в выбранном биоме
-                    local targetEgg = nil
+                    -- Ищем абсолютно любое яйцо во всем Workspace (без ограничений по биомам)
+                    local targetEggPart = nil
                     for _, obj in pairs(workspace:GetDescendants()) do
-                        if not autoStealActive then break end
-                        if obj:IsA("Model") and (obj.Name:lower():find("egg") or obj:FindFirstChild("Hitbox")) then
-                            local parentName = obj.Parent and obj.Parent.Name or ""
-                            if parentName:find(selectedBiome) or obj.Name:find(selectedBiome) or true then
-                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart") or obj:FindFirstChild("Hitbox")
-                                if part then
-                                    targetEgg = part
-                                    break
+                        if not globalFarmActive then break end
+                        if obj:IsA("Model") or obj:IsA("BasePart") then
+                            local nameLower = obj.Name:lower()
+                            if nameLower:find("egg") or obj:FindFirstChild("Hitbox") or obj:FindFirstChildWhichIsA("ProximityPrompt") then
+                                if obj:IsA("Model") then
+                                    targetEggPart = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart") or obj:FindFirstChild("Hitbox")
+                                else
+                                    targetEggPart = obj
                                 end
+                                if targetEggPart then break end
                             end
                         end
                     end
 
-                    -- Если яйцо найдено — телепортируем к нему, берем и несем на базу
-                    if targetEgg then
-                        root.CFrame = targetEgg.CFrame + Vector3.new(0, 3, 0)
+                    -- Если яйцо найдено на любом расстоянии, телепортируемся к нему и забираем
+                    if targetEggPart then
+                        -- ТП к яйцу (работает для любых дальних биомов)
+                        root.CFrame = targetEggPart.CFrame + Vector3.new(0, 3, 0)
                         task.wait(0.3)
 
-                        local prompt = targetEgg.Parent:FindFirstChildWhichIsA("ProximityPrompt", true) or targetEgg:FindFirstChildWhichIsA("ProximityPrompt", true)
+                        -- Эмулируем все типы подбора (Prompt, Touch, Click)
+                        local parentModel = targetEggPart.Parent
+                        local prompt = parentModel:FindFirstChildWhichIsA("ProximityPrompt", true) or targetEggPart:FindFirstChildWhichIsA("ProximityPrompt", true)
                         if prompt then
                             fireproximityprompt(prompt)
                         end
+
+                        -- Дополнительный физический триггер касания для надежности
+                        if targetEggPart:FindFirstChild("TouchInterest") then
+                            firetouchinterest(root, targetEggPart, 0)
+                            firetouchinterest(root, targetEggPart, 1)
+                        end
+                        
                         task.wait(0.4)
 
-                        -- Тп обратно на базу для сдачи
+                        -- Мгновенный возврат на базу с добытым яйцом
                         root.CFrame = basePosition
-                        task.wait(1.2)
+                        task.wait(1.0)
                     else
-                        -- Если яйца в биоме закончились, ждем немного перед повторным сканированием
-                        task.wait(2)
+                        -- Если на карте вообще не осталось яиц, ждем появления новых
+                        task.wait(1.5)
                     end
                 end)
             end
@@ -479,4 +416,4 @@ createToggle("Авто-кража яиц (Цикл до упора)", function(s
     end
 end)
 
-print("Titanic Hub (God Mode Edition) успешно запущен!")
+print("Titanic Hub (Global Farm & Fly Edition) успешно запущен!")
